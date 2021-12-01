@@ -30,7 +30,7 @@ func FindMiddleWithSlice(start *Node) (middle int) {
 		return -1
 	}
 
-	nodeSlice := make([]*Node, 0, 65535)
+	nodeSlice := make([]*Node, 0, 1)
 	current := start
 
 	for current != nil {
@@ -38,7 +38,7 @@ func FindMiddleWithSlice(start *Node) (middle int) {
 		current = current.next
 	}
 
-	return nodeSlice[(len(nodeSlice)+1)/2].value
+	return nodeSlice[(len(nodeSlice))/2].value
 }
 
 // FindMiddleWithPointer finds the middle element by using slow/fast pointers
@@ -55,7 +55,7 @@ func FindMiddleWithPointer(start *Node) (middle int) {
 		fast = fast.next
 		counter++
 
-		if counter%2 == 0 || fast == nil {
+		if counter%2 == 0 {
 			slow = slow.next
 		}
 	}

@@ -7,10 +7,21 @@ import (
 )
 
 func TestMemorySlice(t *testing.T) {
-	size := 65535
-	expected := (size + 1) / 2
+	size := 0
 	start := initSinglyLinkedList(size)
-	assert.Equal(t, FindMiddleWithSlice(start), expected, "middle should be half of size (rounded up)")
+	assert.Equal(t, FindMiddleWithSlice(start), -1, "middle should be -1 for nil lists")
+
+	size = 1
+	start = initSinglyLinkedList(size)
+	assert.Equal(t, FindMiddleWithSlice(start), (size)/2, "middle should be half of size (rounded up)")
+
+	size = 4
+	start = initSinglyLinkedList(size)
+	assert.Equal(t, FindMiddleWithSlice(start), (size)/2, "middle should be half of size (rounded up)")
+
+	size = 5
+	start = initSinglyLinkedList(size)
+	assert.Equal(t, FindMiddleWithSlice(start), (size)/2, "middle should be half of size (rounded up)")
 }
 
 func BenchmarkMemorySlice(b *testing.B) {
@@ -22,10 +33,21 @@ func BenchmarkMemorySlice(b *testing.B) {
 }
 
 func TestMemoryPointer(t *testing.T) {
-	size := 65535
-	expected := (size + 1) / 2
+	size := 0
 	start := initSinglyLinkedList(size)
-	assert.Equal(t, FindMiddleWithPointer(start), expected, "middle should be half of size (rounded up)")
+	assert.Equal(t, FindMiddleWithPointer(start), -1, "middle should be -1 for nil lists")
+
+	size = 1
+	start = initSinglyLinkedList(size)
+	assert.Equal(t, FindMiddleWithPointer(start), (size)/2, "middle should be half of size (rounded up)")
+
+	size = 4
+	start = initSinglyLinkedList(size)
+	assert.Equal(t, FindMiddleWithPointer(start), (size)/2, "middle should be half of size (rounded up)")
+
+	size = 5
+	start = initSinglyLinkedList(size)
+	assert.Equal(t, FindMiddleWithPointer(start), (size)/2, "middle should be half of size (rounded up)")
 }
 
 func BenchmarkMemoryPointer(b *testing.B) {
