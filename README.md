@@ -9,7 +9,7 @@ A template Go project with Mage and all its add-ons
 # You might have to install Mage
 > go install github.com/magefile/mage
 
-# Build the program, running fmt, tidy, linters, and gosec
+# Build and test the program, running fmt, tidy, linters, and gosec
 > mage
 
 # Run it

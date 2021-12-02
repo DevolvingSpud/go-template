@@ -41,7 +41,7 @@ func Build() error {
 
 	// Test the project
 	fmt.Println("Running go test...")
-	if err := sh.RunV("go", "test", "./..."); err != nil {
+	if err := sh.RunV("go", "test", "-v", "./..."); err != nil {
 		return err
 	}
 
