@@ -4,28 +4,41 @@ import (
 	"fmt"
 )
 
+// Node is a singly linked list node, with a pointer to the next node.
 type Node struct {
 	value int
 	next  *Node
+}
+
+var (
+	// start is the first node in the singly linked list
+	start *Node
+)
+
+const (
+	// initSize is the length of singly-linked list to create
+	initSize = 65535
+)
+
+func init() {
+	start = initSinglyLinkedList(initSize)
 }
 
 func main() {
 
 	fmt.Println("Hello")
 
-	start := initSinglyLinkedList(65535)
-
-	middle := FindMiddleWithSlice(start)
+	middle := findMiddleWithSlice(start)
 	fmt.Printf("middle value from slice is %v\n", middle)
 
-	middle = FindMiddleWithPointer(start)
+	middle = findMiddleWithPointer(start)
 	fmt.Printf("middle value from pointer is %v\n", middle)
 
 }
 
-// FindMiddleWithSlice finds the middle element by creating a slice of Nodes, then
+// findMiddleWithSlice finds the middle element by creating a slice of Nodes, then
 // using len() to find the center value
-func FindMiddleWithSlice(start *Node) (middle int) {
+func findMiddleWithSlice(start *Node) (middle int) {
 	if start == nil {
 		return -1
 	}
@@ -41,8 +54,8 @@ func FindMiddleWithSlice(start *Node) (middle int) {
 	return nodeSlice[(len(nodeSlice))/2].value
 }
 
-// FindMiddleWithPointer finds the middle element by using slow/fast pointers
-func FindMiddleWithPointer(start *Node) (middle int) {
+// findMiddleWithPointer finds the middle element by using slow/fast pointers
+func findMiddleWithPointer(start *Node) (middle int) {
 	if start == nil {
 		return -1
 	}
