@@ -23,6 +23,7 @@ var Default = Build
 // * Format
 // * Lint
 // * Security
+// * Test
 // ------------------------------------------------------------
 
 // Build Runs go mod download and then installs the binary.
@@ -37,12 +38,6 @@ func Build() error {
 
 	// Download the project's dependencies
 	if err := sh.RunV("go", "mod", "download"); err != nil {
-		return err
-	}
-
-	// Test the project
-	fmt.Println("Running go test...")
-	if err := sh.RunV("go", "test", "-v", "./..."); err != nil {
 		return err
 	}
 
@@ -103,6 +98,15 @@ func Security() error {
 	}
 
 	if err := sh.RunV("gosec", "-no-fail", "./..."); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Test the project
+func Test() error {
+	fmt.Println("Running go test...")
+	if err := sh.RunV("go", "test", "-v", "./..."); err != nil {
 		return err
 	}
 	return nil
