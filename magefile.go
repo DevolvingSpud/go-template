@@ -96,7 +96,7 @@ func Security() error {
 	fmt.Println("Running gosec...")
 
 	// If gosec is missing, install it
-	isInstalled := installIfMissing("gosec", "github.com/securego/gosec/cmd/gosec@latest")
+	isInstalled := installIfMissing("gosec", "github.com/securego/gosec/v2/cmd/gosec@latest")
 	if !isInstalled {
 		return nil
 	}
