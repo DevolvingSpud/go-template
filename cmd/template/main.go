@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+
+	"github.com/DevolvingSpud/template/pkg/template/version"
+
+	"go.uber.org/zap"
 )
 
 // Node is a singly linked list node, with a pointer to the next node.
@@ -11,6 +15,8 @@ type Node struct {
 }
 
 var (
+	logger *zap.SugaredLogger
+
 	// start is the first node in the singly linked list
 	start *Node
 )
@@ -21,6 +27,14 @@ const (
 )
 
 func init() {
+	// Initialize logger
+	zapLogger, _ := zap.NewProduction()
+	defer zapLogger.Sync()
+	logger = zapLogger.Sugar()
+
+	// Log out the version number
+	logger.Infow("Version", "version", version.Version, "commitHash", version.CommitHash, "timestamp", version.Timestamp)
+
 	start = initSinglyLinkedList(initSize)
 }
 

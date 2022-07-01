@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"os/exec"
+	"time"
 
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
@@ -45,19 +46,19 @@ func Build() error {
 		return err
 	}
 
-	// Build and install the project
-	fmt.Println("Running go install...")
-	if err := sh.RunV("go", "install", "./..."); err != nil {
+	// Build and Install the project
+	fmt.Printf("Running go install...\n")
+	if err := sh.RunV("go", "install", "-ldflags="+flags(), "./..."); err != nil {
 		return err
 	}
-	fmt.Println("Build complete")
+	fmt.Println("Install complete")
 	return nil
 }
 
 // Tidy runs go mod tidy to update the go.mod and go.sum files
 func Tidy() error {
 	fmt.Println("Running go mod tidy...")
-	if err := sh.RunV("go", "mod", "tidy"); err != nil {
+	if err := sh.Run("go", "mod", "tidy"); err != nil {
 		return err
 	}
 	return nil
@@ -124,4 +125,28 @@ func installIfMissing(executableName, installURL string) (isInstalled bool) {
 		fmt.Printf("%v installed...\n", executableName)
 	}
 	return true
+}
+
+// flags gets all the compile flags to set the version and stuff
+func flags() string {
+	timestamp := time.Now().Format(time.RFC3339)
+	hash := hash()
+	tag := tag()
+	if tag == "" {
+		tag = "dev"
+	}
+	return fmt.Sprintf(`-X "github.com/DevolvingSpud/template/pkg/template/version.Timestamp=%s" -X "github.com/DevolvingSpud/template/pkg/template/version.CommitHash=%s" -X "github.com/DevolvingSpud/template/pkg/template/version.Tag=%s"`,
+		timestamp, hash, tag)
+}
+
+// tag returns the git tag for the current branch or "" if none.
+func tag() string {
+	s, _ := sh.Output("git", "describe", "--tags")
+	return s
+}
+
+// hash returns the git hash for the current repo or "" if none.
+func hash() string {
+	hash, _ := sh.Output("git", "rev-parse", "--short", "HEAD")
+	return hash
 }
