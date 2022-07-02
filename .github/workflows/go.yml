@@ -26,3 +26,11 @@ jobs:
 
     - name: Test
       run: mage Test
+
+    - name: GitHub Tag
+      uses: SOLIDSoftworks/semver-tags@latest
+      with:
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN}}
+        tag-prefix: 'v'
+        default-version: '0.0.1'
+        prerelease: 'alpha'
