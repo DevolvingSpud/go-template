@@ -1,4 +1,4 @@
-name: Go
+name: Build Go Code
 
 on:
   push:
@@ -11,6 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Check out code
     - uses: actions/checkout@v3
 
     - name: Set up Go
@@ -26,11 +27,3 @@ jobs:
 
     - name: Test
       run: mage Test
-
-    - name: GitHub Tag
-      uses: SOLIDSoftworks/semver-tags@latest
-      with:
-        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN}}
-        tag-prefix: 'v'
-        default-version: '0.0.1'
-        prerelease: 'alpha'
