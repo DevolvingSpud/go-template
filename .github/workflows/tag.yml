@@ -9,7 +9,7 @@ jobs:
   tag:
     runs-on: ubuntu-latest
     steps:
-    - uses: ./.github/workflows/build
+    - uses: ./.github/workflows/build.yaml
       
     - name: Bump version and push tag
       id: tag_version
