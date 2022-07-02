@@ -1,0 +1,20 @@
+name: Tag Version
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ./.github/workflows/build
+      
+    - name: Bump version and push tag
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v6.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        default_bump: patch
+        release_branches: main
