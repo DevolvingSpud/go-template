@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"time"
 
@@ -35,6 +36,7 @@ func Build() error {
 	mg.Deps(Format)
 	mg.Deps(Lint)
 	mg.Deps(Security)
+	mg.Deps(Licenses)
 
 	// Download the project's dependencies
 	if err := sh.RunV("go", "mod", "download"); err != nil {
@@ -84,6 +86,32 @@ func Lint() error {
 		return err
 	}
 
+	return nil
+}
+
+// Licenses pulls down any dependent project licenses, checking for "forbidden ones"
+func Licenses() error {
+	fmt.Println("Running go-licenses...")
+
+	// Make the directory for the license files
+	err := os.MkdirAll("licenses", os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	// If go-licenses is missing, install it
+	isInstalled := installIfMissing("go-licenses", "github.com/google/go-licenses@latest")
+	if !isInstalled {
+		return nil
+	}
+
+	csvContents := ""
+
+	if csvContents, err = sh.Output("go-licenses", "csv", "--ignore=github.com/DevolvingSpud", "./..."); err != nil {
+		return err
+	}
+
+	err = os.WriteFile("./licenses/licenses.csv", []byte(csvContents), 0666)
 	return nil
 }
 
