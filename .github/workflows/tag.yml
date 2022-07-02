@@ -8,7 +8,9 @@ jobs:
 
   tag:
     runs-on: ubuntu-latest
+
     steps:
+    - uses: actions/checkout@v3
     - uses: ./.github/workflows/build.yaml
       
     - name: Bump version and push tag
