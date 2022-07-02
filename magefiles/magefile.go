@@ -175,7 +175,7 @@ func flags() string {
 	if tag == "" {
 		tag = "dev"
 	}
-	return fmt.Sprintf(`-X "github.com/DevolvingSpud/template/pkg/template/version.Timestamp=%s" -X "github.com/DevolvingSpud/template/pkg/template/version.CommitHash=%s" -X "github.com/DevolvingSpud/template/pkg/template/version.Tag=%s"`,
+	return fmt.Sprintf(`-X "github.com/DevolvingSpud/template/pkg/version.Timestamp=%s" -X "github.com/DevolvingSpud/template/pkg/version.CommitHash=%s" -X "github.com/DevolvingSpud/template/pkg/version.Version=%s"`,
 		timestamp, hash, tag)
 }
 

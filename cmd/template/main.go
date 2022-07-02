@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/DevolvingSpud/template/pkg/template/version"
+	"github.com/DevolvingSpud/template/pkg/version"
 
 	"go.uber.org/zap"
 )
