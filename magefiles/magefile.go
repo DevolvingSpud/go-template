@@ -22,6 +22,7 @@ var Default = Build
 // * Build (default)
 // * Tidy
 // * Format
+// * Licenses
 // * Lint
 // * Security
 // * Test
@@ -34,9 +35,13 @@ func Build() error {
 	// Make everything nice, neat, and proper
 	mg.Deps(Tidy)
 	mg.Deps(Format)
+
+	// Record all licenses in a registry
+	mg.Deps(Licenses)
+
+	// Check for code quality and security issues
 	mg.Deps(Lint)
 	mg.Deps(Security)
-	mg.Deps(Licenses)
 
 	// Download the project's dependencies
 	if err := sh.RunV("go", "mod", "download"); err != nil {
@@ -105,13 +110,16 @@ func Licenses() error {
 		return nil
 	}
 
+	// The header sets the columns for the contents
+	csvHeader := "Package,URL,License\n"
 	csvContents := ""
 
 	if csvContents, err = sh.Output("go-licenses", "csv", "--ignore=github.com/DevolvingSpud", "./..."); err != nil {
 		return err
 	}
 
-	err = os.WriteFile("./licenses/licenses.csv", []byte(csvContents), 0666)
+	// Write out the CSV file with the header row
+	err = os.WriteFile("./licenses/licenses.csv", []byte(csvHeader+csvContents+"\n"), 0666)
 	return nil
 }
 
