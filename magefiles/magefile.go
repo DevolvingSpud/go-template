@@ -3,6 +3,24 @@
 
 package main
 
+// ------------------------------------------------------------
+// The Magefile is a Go program that builds the project,
+// using shell commands (that target both Windows and Linux)
+//
+// You can find more about it at https://github.com/magefile/mage
+//
+// Targets
+//
+// * Build (default)
+// * Tidy
+// * Format
+// * Licenses
+// * Lint
+// * Security
+// * Test
+// * Benchmark
+// ------------------------------------------------------------
+
 import (
 	"fmt"
 	"os"
@@ -15,18 +33,6 @@ import (
 
 // Default sets the default target for Mage
 var Default = Build
-
-// ------------------------------------------------------------
-// Targets
-//
-// * Build (default)
-// * Tidy
-// * Format
-// * Licenses
-// * Lint
-// * Security
-// * Test
-// ------------------------------------------------------------
 
 // Build Runs go mod download and then installs the binary.
 func Build() error {
@@ -50,7 +56,7 @@ func Build() error {
 
 	// Build and Install the project
 	fmt.Printf("Running go install...\n")
-	if err := sh.RunV("go", "install", "-ldflags="+flags(), "./..."); err != nil {
+	if err := sh.RunV("go", "install", "-ldflags="+getFlags(), "./..."); err != nil {
 		return err
 	}
 	fmt.Println("Install complete")
@@ -75,25 +81,6 @@ func Format() error {
 	return nil
 }
 
-// Lint runs various static checkers to ensure you follow The Rules(tm)
-func Lint() error {
-	fmt.Println("Running linter (go vet)...")
-	if err := sh.RunV("go", "vet", "./..."); err != nil {
-		return err
-	}
-
-	isInstalled := installIfMissing("staticcheck", "honnef.co/go/tools/cmd/staticcheck@latest")
-	if !isInstalled {
-		return nil
-	}
-	fmt.Println("Running linter (staticcheck)...")
-	if err := sh.RunV("staticcheck", "-f", "stylish", "./..."); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // Licenses pulls down any dependent project licenses, checking for "forbidden ones"
 func Licenses() error {
 	fmt.Println("Running go-licenses...")
@@ -105,37 +92,19 @@ func Licenses() error {
 	}
 
 	// If go-licenses is missing, install it
-	isInstalled := installIfMissing("go-licenses", "github.com/google/go-licenses@latest")
-	if !isInstalled {
-		return nil
+	if foundOrInstalled("go-licenses", "github.com/google/go-licenses@latest") {
+		// The header sets the columns for the contents
+		csvHeader := "Package,URL,License\n"
+		csvContents := ""
+
+		if csvContents, err = sh.Output("go-licenses", "csv", "--ignore=github.com/DevolvingSpud", "./..."); err != nil {
+			return err
+		}
+
+		// Write out the CSV file with the header row
+		err = os.WriteFile("./licenses/licenses.csv", []byte(csvHeader+csvContents+"\n"), 0666)
 	}
 
-	// The header sets the columns for the contents
-	csvHeader := "Package,URL,License\n"
-	csvContents := ""
-
-	if csvContents, err = sh.Output("go-licenses", "csv", "--ignore=github.com/DevolvingSpud", "./..."); err != nil {
-		return err
-	}
-
-	// Write out the CSV file with the header row
-	err = os.WriteFile("./licenses/licenses.csv", []byte(csvHeader+csvContents+"\n"), 0666)
-	return nil
-}
-
-// Security runs various static checkers to ensure you minimize security holes
-func Security() error {
-	fmt.Println("Running gosec...")
-
-	// If gosec is missing, install it
-	isInstalled := installIfMissing("gosec", "github.com/securego/gosec/v2/cmd/gosec@latest")
-	if !isInstalled {
-		return nil
-	}
-
-	if err := sh.RunV("gosec", "-no-fail", "./..."); err != nil {
-		return err
-	}
 	return nil
 }
 
@@ -148,12 +117,56 @@ func Test() error {
 	return nil
 }
 
+// Test the project
+func Benchmark() error {
+	fmt.Println("Running go test -bench...")
+	if err := sh.RunV("go", "test", "-bench=.", "./..."); err != nil {
+		return err
+	}
+	return nil
+}
+
+// ------------------------------------------------------------
+// Targets for the Magefile that do the quality checks.
+// ------------------------------------------------------------
+
+// Lint runs various static checkers to ensure you follow The Rules(tm)
+func Lint() error {
+	fmt.Println("Running linter (go vet)...")
+	if err := sh.RunV("go", "vet", "./..."); err != nil {
+		return err
+	}
+
+	if foundOrInstalled("staticcheck", "honnef.co/go/tools/cmd/staticcheck@latest") {
+		fmt.Println("Running linter (staticcheck)...")
+		if err := sh.RunV("staticcheck", "-f", "stylish", "./..."); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Security runs various static checkers to ensure you minimize security holes
+func Security() error {
+	fmt.Println("Running gosec...")
+
+	// If gosec is missing, install it
+	if foundOrInstalled("gosec", "github.com/securego/gosec/v2/cmd/gosec@latest") {
+		if err := sh.RunV("gosec", "-no-fail", "-exclude-generated", "-exclude-dir=magefiles", "./..."); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ------------------------------------------------------------
 // Helper Functions
 // ------------------------------------------------------------
 
-// installIfMissing checks for existence then installs a file if it's not there
-func installIfMissing(executableName, installURL string) (isInstalled bool) {
+// foundOrInstalled checks for existence then installs a file if it's not there
+func foundOrInstalled(executableName, installURL string) (isInstalled bool) {
 	_, missing := exec.LookPath(executableName)
 	if missing != nil {
 		fmt.Printf("installing %v...\n", executableName)
@@ -167,8 +180,8 @@ func installIfMissing(executableName, installURL string) (isInstalled bool) {
 	return true
 }
 
-// flags gets all the compile flags to set the version and stuff
-func flags() string {
+// getFlags gets all the compile flags to set the version and stuff
+func getFlags() string {
 	timestamp := time.Now().Format(time.RFC3339)
 	hash := hash()
 	tag := tag()
