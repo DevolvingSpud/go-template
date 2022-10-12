@@ -1,4 +1,4 @@
-# Nate's Template
+# DevolvingSpud's Go Template
 
 A template Go project with Mage, GitHub Actions, and all its add-ons.  This is a good
 starting point for a Go project that does the following:
