@@ -28,7 +28,7 @@ const (
 
 func init() {
 	// Initialize logger
-	zapLogger, _ := zap.NewProduction()
+	zapLogger, _ := zap.NewDevelopment()
 	defer zapLogger.Sync()
 	logger = zapLogger.Sugar()
 
