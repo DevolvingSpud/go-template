@@ -20,8 +20,8 @@ jobs:
       run: go install github.com/magefile/mage@latest
 
     - name: Build
-      run: mage
+      run: mage build:ci
 
     - name: Test
-      run: mage Test
+      run: mage tests:test
 
