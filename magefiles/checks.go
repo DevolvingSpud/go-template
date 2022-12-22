@@ -48,6 +48,20 @@ func (Checks) Security() error {
 	return nil
 }
 
+// Vuln runs various static checkers to ensure you minimize vulnerabilities
+func (Checks) Vuln() error {
+	fmt.Println("Running govulncheck...")
+
+	// If gosec is missing, install it
+	if FoundOrInstalled("govulncheck", "golang.org/x/vuln/cmd/govulncheck@latest") {
+		if err := sh.RunV("govulncheck", "./..."); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // Licenses pulls down any dependent project licenses, checking for "forbidden ones"
 func (Checks) Licenses() error {
 	fmt.Println("Running go-licenses...")
