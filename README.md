@@ -6,7 +6,7 @@ starting point for a Go project that does the following:
 * Provides a pretty comprehensive build script using Mage
   * Has some built-in code-quality checks:
     * `go vet` and `staticcheck` for linting and quality
-    * `gosec` for security linting
+    * `gosec` and `govulncheck` for security linting
     * `go-licenses` to build an inventory of dependency licenses
 * Includes GitHub Actions to build, test, and tag the project
 * Builds all the template projects
